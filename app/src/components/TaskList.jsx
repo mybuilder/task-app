@@ -10,6 +10,7 @@ export default class TaskList extends Component {
                     <TaskItem
                         key={task.id}
                         id={task.id}
+                        isAdding={task.isAdding}
                         inEditMode={task.inEditMode}
                         message={task.message} />)}
             </ul>
@@ -38,7 +39,7 @@ class TaskItem extends Component {
         }
 
         return (
-            <li>
+            <li className={this.props.isAdding ? 'adding' : ''}>
                 {this.props.message}
                 <button onClick={preventDefault(() => taskClientActions.editMode(id))}>Edit</button>
                 <button onClick={preventDefault(() => taskClientActions.remove(id))}>Remove</button>

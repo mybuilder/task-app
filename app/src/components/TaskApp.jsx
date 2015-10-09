@@ -11,6 +11,8 @@ export default class TaskApp extends React.Component {
 
     componentDidMount() {
         taskStore.addChangeListener(this._onChange);
+
+        taskClientActions.fetchAll();
     }
 
     componentWillUnmount() {

@@ -1,12 +1,12 @@
 import appDispatcher from 'dispatcher/AppDispatcher';
 import EventEmitter from 'events';
-import guid from 'lite-guid';
 
 const CHANGE_EVENT = 'changed';
 
 const task = (...x) => Object.assign({ inEditMode: false }, ...x);
 const update = (tasks, id, fn) =>
     tasks.reduce((tasks, task) => [ ...tasks, task.id === id ? fn(task) : task ], []);
+const replace = (tasks, raw) => [ ...tasks.filter(t => t.id !== raw.id), task(raw) ];
 
 class TaskStore {
     emitter = new EventEmitter();
@@ -16,8 +16,14 @@ class TaskStore {
     constructor(dispatcher) {
         this.token = dispatcher.register(action => {
             switch(action.type) {
+                case 'REFRESH_TASK': {
+                    this.tasks = replace(this.tasks, action.task);
+
+                    this._changed();
+                    break;
+                }
                 case 'ADD_TASK': {
-                    this.tasks = [ ...this.tasks, task({ id: guid.create(), message: action.message }) ];
+                    this.tasks = [ ...this.tasks, task({ id: action.id, message: action.message, 'isAdding': true }) ];
 
                     this._changed();
                     break;

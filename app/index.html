@@ -3,10 +3,14 @@
     <head>
         <meta charset="utf-8">
         <title>Task-App</title>
-        <style>.error { border: 1px solid #F00; }</style>
+        <style>
+            .error { border: 1px solid #F00; }
+            .adding { color: #AAA; }
+        </style>
     </head>
     <body>
         <div id="task-app"></div>
     </body>
+    <script>window.TASK_ENDPOINT = "http://localhost:3000/tasks";</script>
     <script src="app.js"></script>
 </html>

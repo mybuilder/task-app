@@ -1,17 +1,30 @@
 import appDispatcher from 'dispatcher/AppDispatcher';
+import taskApi from 'api/TaskApi';
+import guid from 'lite-guid';
 
 class TaskClientActions {
     dispatcher;
+    api;
 
-    constructor(dispatcher) {
+    constructor(dispatcher, api) {
         this.dispatcher = dispatcher;
+        this.api = api;
+    }
+
+    fetchAll() {
+        this.api.fetchAll();
     }
 
     add(message) {
+        const id = guid.create();
+
         this.dispatcher.dispatch({
             type: 'ADD_TASK',
+            id,
             message
         });
+
+        this.api.add(id, message);
     }
 
     remove(id) {
@@ -44,4 +57,4 @@ class TaskClientActions {
     }
 }
 
-export default new TaskClientActions(appDispatcher);
+export default new TaskClientActions(appDispatcher, taskApi);
