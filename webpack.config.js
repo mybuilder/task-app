@@ -1,3 +1,5 @@
+var webpack = require('webpack');
+
 module.exports = {
     context: __dirname + '/app',
     entry: {
@@ -21,6 +23,11 @@ module.exports = {
         modulesDirectories: [ './node_modules', './src' ],
         extensions: [ '', '.js', '.jsx' ]
     },
+    plugins: [
+        new webpack.ProvidePlugin({
+            'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+        }),
+    ],
     output: {
         filename: 'app.js',
         path: __dirname + '/dist'

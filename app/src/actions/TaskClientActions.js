@@ -19,7 +19,7 @@ class TaskClientActions {
         const id = guid.create();
 
         this.dispatcher.dispatch({
-            type: 'ADD_TASK',
+            type: 'ADDING_TASK',
             id,
             message
         });
@@ -29,17 +29,21 @@ class TaskClientActions {
 
     remove(id) {
         this.dispatcher.dispatch({
-            type: 'REMOVE_TASK',
+            type: 'REMOVING_TASK',
             id
         });
+
+        this.api.remove(id);
     }
 
     update(id, message) {
         this.dispatcher.dispatch({
-            type: 'UPDATE_TASK',
+            type: 'UPDATING_TASK',
             id,
             message
         });
+
+        this.api.update(id, message);
     }
 
     editMode(id) {

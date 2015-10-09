@@ -14,8 +14,15 @@ class TaskServerActions {
     refresh(task) {
         this.dispatcher.dispatch({
             type: 'REFRESH_TASK',
-            task: task
+            task
         });
+    }
+
+    remove(id) {
+        this.dispatcher.dispatch({
+            type: 'REMOVE_TASK',
+            id
+        })
     }
 }
 

@@ -1,14 +1,10 @@
 import taskServerActions from 'actions/TaskServerActions';
 
 let endpoint = null;
+export const setEndpoint = (url) => endpoint = url;
 
-export function setEndpoint(url) {
-    endpoint = url;
-}
-
-function parseJson(response) {
-    return response.json();
-}
+const parseJson = (response) => response.json();
+const delay = (fn) => setTimeout(fn, 2.5 * 1000);
 
 class TaskApi {
     serverActions;
@@ -20,17 +16,33 @@ class TaskApi {
     fetchAll() {
         fetch(endpoint)
             .then(parseJson)
-            .then(tasks => this.serverActions.refreshAll(tasks));
+            .then(tasks => this.serverActions.refreshAll(tasks))
     }
 
     add(id, message) {
         fetch(endpoint, {
                 method: 'post',
-                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, message })
             })
             .then(parseJson)
-            .then(task => this.serverActions.refresh(task));
+            .then(task => delay(() => this.serverActions.refresh(task)));
+    }
+
+    update(id, message) {
+        fetch(endpoint + '/' + id, {
+                method: 'put',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, message })
+            })
+            .then(parseJson)
+            .then(task => delay(() => this.serverActions.refresh(task)));
+    }
+
+    remove(id) {
+        fetch(endpoint + '/' + id, { method: 'delete' })
+            .then(parseJson)
+            .then(_ => delay(() => this.serverActions.remove(id)));
     }
 }
 
