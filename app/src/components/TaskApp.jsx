@@ -6,7 +6,7 @@ import TaskList from 'components/TaskList';
 
 export default class TaskApp extends React.Component {
     state = {
-        tasks: []
+        tasks: taskStore.all()
     };
 
     componentDidMount() {

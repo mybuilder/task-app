@@ -9,6 +9,11 @@
     <body>
         <div id="task-app"></div>
     </body>
-    <script>window.TASK_ENDPOINT = 'http://localhost:3000/tasks';</script>
     <script src="app.js"></script>
+    <script>
+        window.initTaskApp(
+            document.getElementById('task-app'),
+            'http://localhost:3000/tasks'
+        );
+    </script>
 </html>
