@@ -1,17 +1,17 @@
 import React from 'react';
 
 const isNotEnterKeyPressed = (e) => e.keyCode !== 13;
+const isInvalidMessage = (message) => !message || message.length < 4;
 
 export default class TaskInput extends React.Component {
     state = {
         hasError: false,
-        hasAttemptedSubmit: false,
         message: ''
     };
 
     componentDidMount() {
         this.setState({
-            message: this.props.message
+            message: this.props.message || ''
         });
     }
 
@@ -21,39 +21,40 @@ export default class TaskInput extends React.Component {
         const message = e.target.value;
 
         this.setState({
-            hasError: message.length < 4,
-            message
+            message,
+            hasError: this.state.hasError && isInvalidMessage(message)
         });
     };
 
-    _handleEnter = (e) => {
+    _handleSubmit = (e) => {
         e.preventDefault();
 
         if (isNotEnterKeyPressed(e)) {
             return;
         }
 
-        this.setState({ hasAttemptedSubmit: true });
+        const message = this.state.message;
 
-        if (this.state.hasError) {
+        if (isInvalidMessage(message)) {
+            this.setState({ hasError: true });
             return;
         }
 
-        this.props.submit(this.state.message);
+        this.props.submit(message);
 
         this.setState({
-            hasAttemptedSubmit: false,
-            message: ''
+            message: '',
+            hasError: false
         });
     };
 
     render() {
         return (
             <input
-                className={this.state.hasAttemptedSubmit && this.state.hasError ? 'error' : ''}
+                className={this.state.hasError ? 'error' : ''}
                 type="text"
                 onChange={this._handleChange}
-                onKeyUp={this._handleEnter}
+                onKeyUp={this._handleSubmit}
                 placeholder={this.props.placeholder}
                 value={this.state.message} />
         );
