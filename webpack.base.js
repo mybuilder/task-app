@@ -19,9 +19,9 @@ module.exports = function(options) {
     }
 
     return {
-        context: __dirname + '/app',
+        context: __dirname + '/src',
         entry: {
-            javascript: './src/app.js',
+            javascript: './app.js',
             html: './index.html'
         },
         module: {

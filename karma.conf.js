@@ -17,7 +17,7 @@ module.exports = function(config) {
         ],
         webpack: {
             resolve: {
-                modulesDirectories: [ './node_modules', './app/src', './spec' ],
+                modulesDirectories: [ './node_modules', './src', './spec' ],
                 extensions: [ '', '.js', '.jsx' ]
             },
             module: {
