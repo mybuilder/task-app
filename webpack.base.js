@@ -21,8 +21,8 @@ module.exports = function(options) {
     return {
         context: __dirname + '/app',
         entry: {
-            javascript: "./src/app.js",
-            html: "./index.html"
+            javascript: './src/app.js',
+            html: './index.html'
         },
         module: {
             loaders: [
@@ -35,7 +35,7 @@ module.exports = function(options) {
                 },
                 {
                     test: /\.html$/,
-                    loader: "file?name=[name].[ext]"
+                    loader: 'file?name=[name].[ext]'
                 }
             ]
         },
