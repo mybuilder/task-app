@@ -10,7 +10,7 @@ export default class TaskList extends Component {
                     <TaskItem
                         key={task.id}
                         id={task.id}
-                        status={task.status}
+                        status={task.pendingStatus}
                         inEditMode={task.inEditMode}
                         message={task.message} />)}
             </ul>

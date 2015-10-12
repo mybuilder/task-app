@@ -18,11 +18,27 @@ class TaskServerActions {
         });
     }
 
+    add(clientId, task) {
+        this.dispatcher.dispatch({
+            type: 'ADD_TASK',
+            clientId,
+            task
+        });
+    }
+
     remove(id) {
         this.dispatcher.dispatch({
             type: 'REMOVE_TASK',
             id
         })
+    }
+
+    error(id, error) {
+        this.dispatcher.dispatch({
+            type: 'TASK_ERROR',
+            id,
+            error
+        });
     }
 }
 

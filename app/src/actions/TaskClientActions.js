@@ -16,15 +16,15 @@ class TaskClientActions {
     }
 
     add(message) {
-        const id = guid.create();
+        const clientId = guid.create();
 
         this.dispatcher.dispatch({
             type: 'ADDING_TASK',
-            id,
+            id: clientId,
             message
         });
 
-        this.api.add(id, message);
+        this.api.add(clientId, message);
     }
 
     remove(id) {

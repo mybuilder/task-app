@@ -26,7 +26,8 @@ class TaskApi {
                 body: JSON.stringify({ id, message })
             })
             .then(parseJson)
-            .then(task => delay(() => this.serverActions.refresh(task)));
+            .then(task => delay(() => this.serverActions.add(id, task)))
+            .catch(error => this.serverActions.error(id, error));
     }
 
     update(id, message) {
@@ -36,13 +37,15 @@ class TaskApi {
                 body: JSON.stringify({ id, message })
             })
             .then(parseJson)
-            .then(task => delay(() => this.serverActions.refresh(task)));
+            .then(task => delay(() => this.serverActions.refresh(task)))
+            .catch(error => this.serverActions.error(id, error));
     }
 
     remove(id) {
         fetch(endpoint + '/' + id, { method: 'delete' })
             .then(parseJson)
-            .then(_ => delay(() => this.serverActions.remove(id)));
+            .then(_ => delay(() => this.serverActions.remove(id)))
+            .catch(error => this.serverActions.error(id, error));
     }
 }
 
