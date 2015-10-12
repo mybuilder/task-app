@@ -10,7 +10,7 @@ const PENDING_UPDATE = 'updating';
 
 const task = (...attr) => Object.assign({ inEditMode: false, pendingStatus: null }, ...attr);
 
-class TaskStore {
+export class TaskStore {
     emitter = new EventEmitter();
     tasks = new OrderedMap();
     pendingChanges = new Map();

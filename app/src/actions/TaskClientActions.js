@@ -2,7 +2,7 @@ import appDispatcher from 'dispatcher/AppDispatcher';
 import taskApi from 'api/TaskApi';
 import guid from 'lite-guid';
 
-class TaskClientActions {
+export class TaskClientActions {
     dispatcher;
     api;
 

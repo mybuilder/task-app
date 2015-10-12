@@ -1,6 +1,6 @@
 import appDispatcher from 'dispatcher/AppDispatcher';
 
-class TaskServerActions {
+export class TaskServerActions {
     dispatcher;
 
     constructor(dispatcher) {
