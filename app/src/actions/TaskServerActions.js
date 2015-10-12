@@ -33,10 +33,17 @@ class TaskServerActions {
         })
     }
 
-    error(id, error) {
+    taskError(id, error) {
         this.dispatcher.dispatch({
             type: 'TASK_ERROR',
             id,
+            error
+        });
+    }
+
+    listError(error) {
+        this.dispatcher.dispatch({
+            type: 'TASK_LIST_ERROR',
             error
         });
     }

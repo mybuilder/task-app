@@ -17,6 +17,7 @@ class TaskApi {
         fetch(endpoint)
             .then(parseJson)
             .then(tasks => this.serverActions.refreshAll(tasks))
+            .catch(error => this.serverActions.listError(error));
     }
 
     add(id, message) {
@@ -27,7 +28,7 @@ class TaskApi {
             })
             .then(parseJson)
             .then(task => delay(() => this.serverActions.add(id, task)))
-            .catch(error => this.serverActions.error(id, error));
+            .catch(error => this.serverActions.taskError(id, error));
     }
 
     update(id, message) {
@@ -38,14 +39,14 @@ class TaskApi {
             })
             .then(parseJson)
             .then(task => delay(() => this.serverActions.refresh(task)))
-            .catch(error => this.serverActions.error(id, error));
+            .catch(error => this.serverActions.taskError(id, error));
     }
 
     remove(id) {
         fetch(endpoint + '/' + id, { method: 'delete' })
             .then(parseJson)
             .then(_ => delay(() => this.serverActions.remove(id)))
-            .catch(error => this.serverActions.error(id, error));
+            .catch(error => this.serverActions.taskError(id, error));
     }
 }
 
