@@ -4,7 +4,7 @@ let endpoint = null;
 export const setEndpoint = (url) => endpoint = url;
 
 const parseJson = (response) => response.json();
-const delay = (fn) => setTimeout(fn, 2.5 * 1000);
+const delay = (fn) => setTimeout(fn, 500);
 
 class TaskApi {
     serverActions;
