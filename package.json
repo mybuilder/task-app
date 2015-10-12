@@ -1,7 +1,8 @@
 {
   "scripts": {
     "api": "./node_modules/.bin/json-server --watch tasks.json",
-    "serve-hot": "./node_modules/.bin/webpack-dev-server --hot --inline"
+    "serve": "./node_modules/.bin/webpack-dev-server --config webpack.dev.js --inline --hot",
+    "build": "./node_modules/.bin/webpack --config webpack.prod.js"
   },
   "dependencies": {
     "flux": "^2.1.1",
