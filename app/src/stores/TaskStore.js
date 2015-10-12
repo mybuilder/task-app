@@ -20,34 +20,40 @@ class TaskStore {
         this.token = dispatcher.register(action => {
             switch(action.type) {
                 case 'ADDING_TASK': {
-                    this.pendingChanges = this.pendingChanges.set(action.id, tasks =>
+                    const {id, message} = action;
+
+                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
                         tasks.set(
-                            action.id,
-                            task({ id: action.id, message: action.message, pendingStatus: PENDING_ADDITION })));
+                            id,
+                            task({ id, message, pendingStatus: PENDING_ADDITION })));
 
                     this._changed();
                     break;
                 }
                 case 'REMOVING_TASK': {
-                    this.pendingChanges = this.pendingChanges.set(action.id, tasks =>
+                    const {id} = action;
+
+                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
                         tasks.update(
-                            action.id,
+                            id,
                             t => task(t, { pendingStatus: PENDING_REMOVAL })));
 
                     this._changed();
                     break;
                 }
                 case 'UPDATING_TASK': {
-                    this.pendingChanges = this.pendingChanges.set(action.id, tasks =>
+                    const {id, message} = action;
+
+                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
                         tasks.update(
-                            action.id,
-                            t => task(t, { message: action.message, pendingStatus: PENDING_UPDATE, inEditMode: false })));
+                            id,
+                            t => task(t, { message, pendingStatus: PENDING_UPDATE, inEditMode: false })));
 
                     this._changed();
                     break;
                 }
                 case 'REFRESH_TASK': {
-                    const raw = action.task;
+                    const {raw} = action;
                     
                     this.tasks = this.tasks.set(raw.id, task(raw));
                     this.pendingChanges = this.pendingChanges.remove(raw.id);
@@ -56,17 +62,19 @@ class TaskStore {
                     break;
                 }
                 case 'ADD_TASK': {
-                    const raw = action.task;
+                    const {clientId, raw} = action;
                     
                     this.tasks = this.tasks.set(raw.id, task(raw));
-                    this.pendingChanges = this.pendingChanges.remove(action.clientId);
+                    this.pendingChanges = this.pendingChanges.remove(clientId);
 
                     this._changed();
                     break;
-                }                
+                }
                 case 'REMOVE_TASK': {
-                    this.tasks = this.tasks.delete(action.id);
-                    this.pendingChanges = this.pendingChanges.delete(action.id);
+                    const {id} = action;
+
+                    this.tasks = this.tasks.delete(id);
+                    this.pendingChanges = this.pendingChanges.delete(id);
 
                     this._changed();
                     break;
@@ -88,7 +96,9 @@ class TaskStore {
                     break;
                 }
                 case 'TASK_ERROR': {
-                    this.pendingChanges = this.pendingChanges.remove(action.id);
+                    const {id, error} = action;
+
+                    this.pendingChanges = this.pendingChanges.remove(id);
 
                     this._changed();
                     break;

@@ -14,7 +14,7 @@ class TaskServerActions {
     refresh(task) {
         this.dispatcher.dispatch({
             type: 'REFRESH_TASK',
-            task
+            raw: task
         });
     }
 
@@ -22,7 +22,7 @@ class TaskServerActions {
         this.dispatcher.dispatch({
             type: 'ADD_TASK',
             clientId,
-            task
+            raw: task
         });
     }
 
