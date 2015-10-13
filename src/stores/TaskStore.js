@@ -123,7 +123,7 @@ export class TaskStore {
     }
 
     removeChangeListener(callback) {
-        this.emitter.on(CHANGE_EVENT, callback);
+        this.emitter.removeListener(CHANGE_EVENT, callback);
     }
 }
 
