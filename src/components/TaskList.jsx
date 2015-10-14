@@ -31,9 +31,9 @@ class TaskItem extends Component {
 
         return (
             <span>
-                <i onClick={preventDefault(() => taskClientActions.editMode(id))} className="fa fa-pencil" />
+                <i onClick={preventDefault(() => taskClientActions.editMode(id))} className="fa fa-pencil edit-mode" />
                 &nbsp;
-                <i onClick={preventDefault(() => taskClientActions.remove(id))} className="fa fa-trash-o" />
+                <i onClick={preventDefault(() => taskClientActions.remove(id))} className="fa fa-trash-o remove" />
             </span>
         );
     }
@@ -47,7 +47,7 @@ class TaskItem extends Component {
                     <TaskInput
                         message={this.props.message}
                         submit={message => taskClientActions.update(id, message)} />
-                    <i onClick={preventDefault(() => taskClientActions.viewMode(id))} className="fa fa-times" />
+                    <i onClick={preventDefault(() => taskClientActions.viewMode(id))} className="fa fa-times view-mode" />
                 </li>
             );
         }
