@@ -5,11 +5,10 @@ module.exports = function(config) {
         basePath: '',
         frameworks: ['mocha'],
         files: [
-            './spec/*Spec.js',
-            'spec/**/*Spec.js'
+            './node_modules/babel-core/browser-polyfill.js',
+            './spec/**/*Spec.js'
         ],
         preprocessors: {
-            './spec/*Spec.js': ['webpack'],
             './spec/**/*Spec.js': ['webpack']
         },
         browsers: [
