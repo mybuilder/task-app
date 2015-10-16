@@ -21,7 +21,11 @@ router.route('/')
 
     .post((req, res) => {
         const id = guid.create();
-        tasks.push({ id, message: req.body.message });
+        const message = req.body.message;
+
+        if (message == 'error') return res.status(400).end();
+
+        tasks.push({ id, message });
         return res
             .location(url(req, id))
             .status(201)
@@ -34,10 +38,14 @@ router.route('/:id')
             resource(url(req), tasks.find({ id: req.params.id }))))
 
     .put((req, res) => {
+        const message = req.body.message;
+
+        if (message == 'error') return res.status(400).end();
+
         tasks
             .chain()
             .find({ id: req.params.id })
-            .assign({ message: req.body.message })
+            .assign({ message })
             .value();
 
         return res

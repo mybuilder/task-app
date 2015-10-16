@@ -5,6 +5,16 @@ export const setEndpoint = (url) => endpoint = url;
 
 const parseJson = (response) => response.json();
 const followLocation = (response) => fetch(response.headers.get('Location'));
+const handleError = (response) => {
+    if (!response.ok) {
+        const error = new Error(response.statusText);
+        error.response = response;
+
+        throw error;
+    }
+
+    return response;
+};
 
 class TaskApi {
     serverActions;
@@ -26,6 +36,7 @@ class TaskApi {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
             })
+            .then(handleError)
             .then(followLocation)
             .then(parseJson)
             .then(task => this.serverActions.add(id, task))
@@ -38,6 +49,7 @@ class TaskApi {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
             })
+            .then(handleError)
             .then(followLocation)
             .then(parseJson)
             .then(task => this.serverActions.refresh(task))
