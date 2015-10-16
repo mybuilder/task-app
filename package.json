@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "api": "./node_modules/.bin/json-server --watch tasks.json",
     "serve": "./node_modules/.bin/webpack-dev-server --config webpack.dev.js --inline --hot",
     "build": "./node_modules/.bin/webpack --config webpack.prod.js",
     "test": "./node_modules/karma/bin/karma start",
@@ -9,7 +8,6 @@
   "dependencies": {
     "flux": "^2.1.1",
     "immutable": "^3.7.5",
-    "json-server": "^0.8.1",
     "lite-guid": "^1.2.0",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",

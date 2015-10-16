@@ -9,6 +9,7 @@ export default class TaskList extends Component {
                 {this.props.tasks.map(task =>
                     <TaskItem
                         key={task.id}
+                        self={task._links.self.href}
                         id={task.id}
                         status={task.pendingStatus}
                         inEditMode={task.inEditMode}
@@ -24,7 +25,7 @@ const preventDefault = (fn) => (e) => {
 };
 
 class TaskItem extends Component {
-    _renderStatusOrActions(id) {
+    _renderStatusOrActions(self, id) {
         if (this.props.status) {
             return <span>({this.props.status})</span>;
         }
@@ -33,25 +34,26 @@ class TaskItem extends Component {
             <span>
                 <i onClick={preventDefault(() => taskClientActions.editMode(id))} className="fa fa-pencil edit-mode" />
                 &nbsp;
-                <i onClick={preventDefault(() => taskClientActions.remove(id))} className="fa fa-trash-o remove" />
+                <i onClick={preventDefault(() => taskClientActions.remove(self, id))} className="fa fa-trash-o remove" />
             </span>
         );
     }
 
     render() {
         const id = this.props.id;
+        const self = this.props.self;
 
         if (this.props.inEditMode) {
             return (
                 <li>
                     <TaskInput
                         message={this.props.message}
-                        submit={message => taskClientActions.update(id, message)} />
+                        submit={message => taskClientActions.update(self, id, message)} />
                     <i onClick={preventDefault(() => taskClientActions.viewMode(id))} className="fa fa-times view-mode" />
                 </li>
             );
         }
 
-        return <li>{this.props.message} {this._renderStatusOrActions(id)}</li>;
+        return <li>{this.props.message} {this._renderStatusOrActions(self, id)}</li>;
     }
 }

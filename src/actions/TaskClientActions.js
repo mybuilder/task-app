@@ -27,23 +27,23 @@ export class TaskClientActions {
         this.api.add(clientId, message);
     }
 
-    remove(id) {
+    remove(self, id) {
         this.dispatcher.dispatch({
             type: 'REMOVING_TASK',
             id
         });
 
-        this.api.remove(id);
+        this.api.remove(self, id);
     }
 
-    update(id, message) {
+    update(self, id, message) {
         this.dispatcher.dispatch({
             type: 'UPDATING_TASK',
             id,
             message
         });
 
-        this.api.update(id, message);
+        this.api.update(self, id, message);
     }
 
     editMode(id) {

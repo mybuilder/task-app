@@ -4,7 +4,7 @@ let endpoint = null;
 export const setEndpoint = (url) => endpoint = url;
 
 const parseJson = (response) => response.json();
-const delay = (fn) => setTimeout(fn, 500);
+const followLocation = (response) => fetch(response.headers.get('Location'));
 
 class TaskApi {
     serverActions;
@@ -16,36 +16,37 @@ class TaskApi {
     fetchAll() {
         fetch(endpoint)
             .then(parseJson)
-            .then(tasks => this.serverActions.refreshAll(tasks))
+            .then(response => this.serverActions.refreshAll(response.tasks))
             .catch(error => this.serverActions.listError(error));
     }
 
     add(id, message) {
         fetch(endpoint, {
-                method: 'post',
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, message })
+                body: JSON.stringify({ message })
             })
+            .then(followLocation)
             .then(parseJson)
-            .then(task => delay(() => this.serverActions.add(id, task)))
+            .then(task => this.serverActions.add(id, task))
             .catch(error => this.serverActions.taskError(id, error));
     }
 
-    update(id, message) {
-        fetch(endpoint + '/' + id, {
-                method: 'put',
+    update(self, id, message) {
+        fetch(self, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, message })
+                body: JSON.stringify({ message })
             })
+            .then(followLocation)
             .then(parseJson)
-            .then(task => delay(() => this.serverActions.refresh(task)))
+            .then(task => this.serverActions.refresh(task))
             .catch(error => this.serverActions.taskError(id, error));
     }
 
-    remove(id) {
-        fetch(endpoint + '/' + id, { method: 'delete' })
-            .then(parseJson)
-            .then(_ => delay(() => this.serverActions.remove(id)))
+    remove(self, id) {
+        fetch(self, { method: 'DELETE' })
+            .then(_ => this.serverActions.remove(id))
             .catch(error => this.serverActions.taskError(id, error));
     }
 }

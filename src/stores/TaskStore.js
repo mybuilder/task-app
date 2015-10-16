@@ -8,7 +8,10 @@ const PENDING_ADDITION = 'adding';
 const PENDING_REMOVAL = 'removing';
 const PENDING_UPDATE = 'updating';
 
-const task = (...attr) => Object.assign({ inEditMode: false, pendingStatus: null }, ...attr);
+const task = (...attr) => Object.assign({
+    inEditMode: false,
+    pendingStatus: null,
+    _links: { self: { href: '' } }}, ...attr);
 
 export class TaskStore {
     emitter = new EventEmitter();
