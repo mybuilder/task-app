@@ -31,7 +31,7 @@ router.route('/')
 router.route('/:id')
     .get((req, res) =>
         res.json(
-            resource(url(req, req.params.id), tasks.find({ id: req.params.id }))))
+            resource(url(req), tasks.find({ id: req.params.id }))))
 
     .put((req, res) => {
         tasks
