@@ -11,7 +11,7 @@ app.use((req, res, next) => setTimeout(() => next(), 500)); // simulate delay
 
 const url = (r, p) => r.protocol + '://' + r.get('host') + r.originalUrl + (p ? `/${p}` : '');
 const resource = (href, attr) => Object.assign({ _links: { self: { href } } }, attr);
-const tasks = low('./tasks.json')('tasks');
+const tasks = low(__dirname + '/tasks.json')('tasks');
 const router = express.Router();
 
 router.route('/')
