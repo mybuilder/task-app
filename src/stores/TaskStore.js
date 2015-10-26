@@ -1,6 +1,6 @@
 import appDispatcher from 'dispatcher/AppDispatcher';
 import EventEmitter from 'events';
-import {OrderedMap, Map} from 'immutable';
+import {OrderedMap, Map, Record} from 'immutable';
 
 const CHANGE_EVENT = 'changed';
 
@@ -8,126 +8,96 @@ const PENDING_ADDITION = 'adding';
 const PENDING_REMOVAL = 'removing';
 const PENDING_UPDATE = 'updating';
 
-const task = (...attr) => Object.assign({
-    inEditMode: false,
-    pendingStatus: null,
-    _links: { self: { href: '' } }}, ...attr);
-
 export class TaskStore {
-    emitter = new EventEmitter();
-    tasks = new OrderedMap();
-    pendingChanges = new Map();
-    token;
+    _token;
+    _state; // immutable state
+    _stateExcludingOptimistic; // immutable state that excludes optimistic actions changes
+    _optimisticActions = new OrderedMap();
+    _emitter = new EventEmitter();
 
-    constructor(dispatcher) {
-        this.token = dispatcher.register(action => {
-            switch(action.type) {
-                case 'ADDING_TASK': {
-                    const {id, message} = action;
+    constructor(dispatcher, initialState = new OrderedMap()) {
+        this._state = initialState;
+        this._stateExcludingOptimistic = initialState;
 
-                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
-                        tasks.set(
-                            id,
-                            task({ id, message, pendingStatus: PENDING_ADDITION })));
+        this._token = dispatcher.register(action => {
+            const startingState = this._stateExcludingOptimistic;
+            const endingState = this.transform(startingState, action);
 
-                    this._changed();
-                    break;
+            if (startingState !== endingState || action.replacesOptimisticActionId) {
+                if (action.replacesOptimisticActionId) {
+                    this._optimisticActions = this._optimisticActions.delete(action.replacesOptimisticActionId);
                 }
-                case 'REMOVING_TASK': {
-                    const {id} = action;
 
-                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
-                        tasks.update(
-                            id,
-                            t => task(t, { pendingStatus: PENDING_REMOVAL })));
-
-                    this._changed();
-                    break;
+                if (action.optimisticActionId) {
+                    this._optimisticActions = this._optimisticActions.set(action.optimisticActionId, action);
+                } else {
+                    this._stateExcludingOptimistic = endingState;
                 }
-                case 'UPDATING_TASK': {
-                    const {id, message} = action;
 
-                    this.pendingChanges = this.pendingChanges.set(id, tasks =>
-                        tasks.update(
-                            id,
-                            t => task(t, { message, pendingStatus: PENDING_UPDATE, inEditMode: false })));
+                this._state = this._optimisticActions.reduce(this.transform, this._stateExcludingOptimistic);
 
-                    this._changed();
-                    break;
-                }
-                case 'REFRESH_TASK': {
-                    const {raw} = action;
-                    
-                    this.tasks = this.tasks.set(raw.id, task(raw));
-                    this.pendingChanges = this.pendingChanges.remove(raw.id);
-
-                    this._changed();
-                    break;
-                }
-                case 'ADD_TASK': {
-                    const {clientId, raw} = action;
-                    
-                    this.tasks = this.tasks.set(raw.id, task(raw));
-                    this.pendingChanges = this.pendingChanges.remove(clientId);
-
-                    this._changed();
-                    break;
-                }
-                case 'REMOVE_TASK': {
-                    const {id} = action;
-
-                    this.tasks = this.tasks.delete(id);
-                    this.pendingChanges = this.pendingChanges.delete(id);
-
-                    this._changed();
-                    break;
-                }
-                case 'TASK_TO_EDIT_MODE': {
-                    this.tasks = this.tasks.update(
-                        action.id,
-                        t => task(t, { inEditMode: true }));
-
-                    this._changed();
-                    break;
-                }
-                case 'TASK_TO_VIEW_MODE': {
-                    this.tasks = this.tasks.update(
-                        action.id,
-                        t => task(t, { inEditMode: false }));
-
-                    this._changed();
-                    break;
-                }
-                case 'TASK_ERROR': {
-                    const {id, error} = action;
-
-                    this.pendingChanges = this.pendingChanges.remove(id);
-
-                    this._changed();
-                    break;
-                }
+                this._emitter.emit(CHANGE_EVENT);
             }
         });
     }
 
-    _changed() {
-        this.emitter.emit(CHANGE_EVENT);
+    transform(state, action) {
+        switch(action.type) {
+            case 'UPDATE_TASK':
+                return state
+                    .setIn([action.id, 'pendingStatus'], PENDING_UPDATE)
+                    .setIn([action.id, 'inEditMode'], false)
+                    .setIn([action.id, 'message'], action.message.trim());
+
+            case 'REFRESH_TASK':
+                return state.set(action.raw.id, new Task(action.raw));
+
+            case 'ADD_TASK':
+                return state.set(action.raw.id, new Task(action.raw));
+
+            case 'REMOVE_TASK':
+                return state.delete(action.id);
+
+            case 'TASK_TO_EDIT_MODE':
+                return state.setIn([action.id, 'inEditMode'], true);
+
+            case 'TASK_TO_VIEW_MODE':
+                return state.setIn([action.id, 'inEditMode'], false);
+
+            case 'TASK_ERROR':
+                // TODO add error handling
+                return state;
+
+            default:
+                return state;
+        }
     }
 
     all() {
-        return this
-            .pendingChanges
-            .reduce((tasks, change) => change(tasks), this.tasks)
-            .toArray();
+        return this._state.toArray().map(t => t.toJS());
     }
 
     addChangeListener(callback) {
-        this.emitter.on(CHANGE_EVENT, callback);
+        this._emitter.on(CHANGE_EVENT, callback);
     }
 
     removeChangeListener(callback) {
-        this.emitter.removeListener(CHANGE_EVENT, callback);
+        this._emitter.removeListener(CHANGE_EVENT, callback);
     }
 }
+
+export class Task extends Record({
+  id: undefined,
+  inEditMode: false,
+  message: undefined,
+  pendingStatus: null,
+  _links: {
+      self: {
+          href: undefined
+      }
+  }
+}) {
+
+};
 
 export default new TaskStore(appDispatcher);

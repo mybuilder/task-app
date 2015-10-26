@@ -16,34 +16,28 @@ export class TaskClientActions {
     }
 
     add(message) {
-        const clientId = guid.create();
-
-        this.dispatcher.dispatch({
-            type: 'ADDING_TASK',
-            id: clientId,
-            message
-        });
-
-        this.api.add(clientId, message);
+        this.api.add(this.optimisticAction({
+            type: 'ADD_TASK',
+            raw: {
+                id: guid.create(),
+                message
+            }
+        }), message);
     }
 
     remove(self, id) {
-        this.dispatcher.dispatch({
-            type: 'REMOVING_TASK',
+        this.api.remove(this.optimisticAction({
+            type: 'REMOVE_TASK',
             id
-        });
-
-        this.api.remove(self, id);
+        }), self, id);
     }
 
     update(self, id, message) {
-        this.dispatcher.dispatch({
-            type: 'UPDATING_TASK',
+        this.api.update(this.optimisticAction({
+            type: 'UPDATE_TASK',
             id,
             message
-        });
-
-        this.api.update(self, id, message);
+        }), self, id, message);
     }
 
     editMode(id) {
@@ -58,6 +52,23 @@ export class TaskClientActions {
             type: 'TASK_TO_VIEW_MODE',
             id
         });
+    }
+
+    optimisticAction(action) {
+        const optimisticActionId = guid.create();
+        const timeout = setTimeout(() => {
+            console.error(`Optimistic action timed out (id: ${optimisticActionId})`, action);
+
+            this.dispatcher.dispatch({ type: 'OPTIMISTIC_ACTION_TIMEOUT', replacesOptimisticActionId: optimisticActionId});
+        }, 2000);
+
+        this.dispatcher.dispatch({...action, optimisticActionId});
+
+        return (newAction = action) => {
+            clearTimeout(timeout);
+
+            this.dispatcher.dispatch({...newAction, replacesOptimisticActionId: optimisticActionId});
+        };
     }
 }
 

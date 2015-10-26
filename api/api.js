@@ -55,7 +55,10 @@ router.route('/:id')
     })
 
     .delete((req, res) => {
+        if (tasks.find({ id: req.params.id }).message == 'read-only') return res.status(400).end();
+
         tasks.remove({ id: req.params.id });
+
         return res
             .status(204)
             .json();

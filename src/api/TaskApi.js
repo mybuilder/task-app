@@ -30,7 +30,7 @@ class TaskApi {
             .catch(error => this.serverActions.listError(error));
     }
 
-    add(id, message) {
+    add(dispatch, message) {
         fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -39,11 +39,18 @@ class TaskApi {
             .then(handleError)
             .then(followLocation)
             .then(parseJson)
-            .then(task => this.serverActions.add(id, task))
-            .catch(error => this.serverActions.taskError(id, error));
+            .then(task => dispatch({
+                type: 'ADD_TASK',
+                raw: task
+            }))
+            .catch(error => dispatch({
+                type: 'ADD_TASK_ERROR',
+                message,
+                error
+            }));
     }
 
-    update(self, id, message) {
+    update(dispatch, self, id, message) {
         fetch(self, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -52,14 +59,28 @@ class TaskApi {
             .then(handleError)
             .then(followLocation)
             .then(parseJson)
-            .then(task => this.serverActions.refresh(task))
-            .catch(error => this.serverActions.taskError(id, error));
+            .then(task => dispatch({
+                type: 'REFRESH_TASK',
+                raw: task
+            }))
+            .catch(error => dispatch({
+                type: 'UPDATE_TASK_ERROR',
+                id,
+                message
+            }));
     }
 
-    remove(self, id) {
+    remove(dispatch, self, id) {
         fetch(self, { method: 'DELETE' })
-            .then(_ => this.serverActions.remove(id))
-            .catch(error => this.serverActions.taskError(id, error));
+            .then(handleError)
+            .then(task => dispatch({
+                type: 'REMOVE_TASK',
+                id
+            }))
+            .catch(error => dispatch({
+                type: 'REMOVE_TASK_ERROR',
+                id
+            }));
     }
 }
 
